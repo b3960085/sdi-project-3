@@ -26,7 +26,7 @@ if (!remoteAvailable) {
 
 var parseArtists = function (serverQuery) {
     var remainingArtists = Object.keys(serverQuery.artists).length;
-    // console.log(remainingArtists);
+    console.log(remainingArtists);
     while (remainingArtists > 0) {
         var key = Object.keys(serverQuery.artists)[(remainingArtists - 1)];
         var songCount = 0;
@@ -50,6 +50,7 @@ var parseArtists = function (serverQuery) {
         }
         for (var albumKey in serverQuery.artists[key].albums) {
             artist.albums[albumKey] = serverQuery.artists[key].albums[albumKey];
+            artist.albums[albumKey].name = albumKey;
             artist.albums[albumKey].trackList = function (albumKey) {
                 this.songs.forEach(function (song, index) {
                     console.log("Track " + (index + 1) + ": " + song.title);
@@ -69,7 +70,21 @@ var parseArtists = function (serverQuery) {
     }
 }
 
-var countArtists = function ()
+var currentSelection = function (artistKey, albumKey, songIndex) {
+    var artist = artistCollection[artistKey];
+    var album = artist.albums[albumKey];
+    var song = album.songs[songIndex];
+    return (song.title + " from the album " + album.name + " by " + artist.name);
+}
 
 parseArtists(serverQuery);
+
+var selectedArtist = "Daft Punk";
+var selectedAlbum = "Random Access Memories";
+var selectedAlbumSongs = [0, 2, 5, 3];
+
+console.log("Synced " + Object.keys(serverQuery.artists).length + " artists into local collection.");
+var selection = currentSelection("Daft Punk", "Random Access Memories", 2);
+console.log("You have chosen to play " + selection + ".");
+
 // var artistCount = countArtists();
