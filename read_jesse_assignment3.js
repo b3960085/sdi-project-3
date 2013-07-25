@@ -6,6 +6,7 @@
 // Global State
 var remoteAvailable = false;
 var localJSONAvailable = true;
+var artistCollection = {};
 
 // Conditional: is remote server available?
 if (!remoteAvailable) {
@@ -24,33 +25,50 @@ if (!remoteAvailable) {
 
 
 var parseArtists = function (serverQuery) {
-    for (var key in serverQuery.artists) {
-        var totalDuration = 0;
+    var remainingArtists = Object.keys(serverQuery.artists).length;
+    // console.log(remainingArtists);
+    while (remainingArtists > 0) {
+        var key = Object.keys(serverQuery.artists)[(remainingArtists - 1)];
+        var songCount = 0;
         var artist = {
             "name": key,
             "albums":{},
-            "duration": 0,
+            // "albumDuration": function (albumKey),
+            "totalDuration": function () {
+                var artistDuration = 0;
+                for (var albumKey in this.albums) {
+                    this.albums[albumKey].songs.forEach(function (song) {
+                        artistDuration += song.duration;
+                    });
+                }
+                return artistDuration;
+            },
+            "setCanStream": function (ableToStream) {
+                this.canStream = ableToStream;
+            }
         }
         for (var albumKey in serverQuery.artists[key].albums) {
-            var albumDuration = 0;
-            //console.log(albumKey);
-            //console.log(Object.keys(serverQuery.artists[key].albums[albumKey].songs).length);
             artist.albums[albumKey] = serverQuery.artists[key].albums[albumKey];
-            artist.albums[albumKey].songs.forEach(function (song) {
-                albumDuration += song.duration;
-            });
-            artist.albums[albumKey].duration = albumDuration;
-            totalDuration += albumDuration
-            console.log(albumDuration);
-            //artist.albums[albumKey] = {
-            //    "Test": "test",
-            //    "Boogers": "boog",
-            //}
+            artist.albums[albumKey].trackList = function (albumKey) {
+                this.songs.forEach(function (song, index) {
+                    console.log("Track " + (index + 1) + ": " + song.title);
+                });
+            };
+            songCount += artist.albums[albumKey].songs.length;
         }
-        artist.duration = totalDuration;
-        console.log(totalDuration);
-        console.log(artist);
+        if (remoteAvailable) {
+            artist.canStream = true;
+        } else {
+            artist.canStream = false;
+        }
+        artist.songCount = songCount;
+        artistCollection[key] = artist;
+        remainingArtists--;
     }
 }
 
-var artistCollection = parseArtists(serverQuery);
+parseArtists(serverQuery);
+console.log(artistCollection["Daft Punk"].totalDuration());
+artistCollection["Pink Floyd"].setCanStream(false);
+console.log(artistCollection["Pink Floyd"].canStream);
+artistCollection["Pink Floyd"].albums["Wish You Were Here"].trackList();
