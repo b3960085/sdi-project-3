@@ -33,6 +33,7 @@ var parseArtists = function (serverQuery) {
         var artist = {
             "name": key,
             "albums":{},
+            "releaseYears": [],
             // "albumDuration": function (albumKey),
             "totalDuration": function () {
                 var artistDuration = 0;
@@ -54,6 +55,7 @@ var parseArtists = function (serverQuery) {
                     console.log("Track " + (index + 1) + ": " + song.title);
                 });
             };
+            artist.releaseYears.push(artist.albums[albumKey].releaseYear);
             songCount += artist.albums[albumKey].songs.length;
         }
         if (remoteAvailable) {
@@ -67,8 +69,7 @@ var parseArtists = function (serverQuery) {
     }
 }
 
+var countArtists = function ()
+
 parseArtists(serverQuery);
-console.log(artistCollection["Daft Punk"].totalDuration());
-artistCollection["Pink Floyd"].setCanStream(false);
-console.log(artistCollection["Pink Floyd"].canStream);
-artistCollection["Pink Floyd"].albums["Wish You Were Here"].trackList();
+// var artistCount = countArtists();
