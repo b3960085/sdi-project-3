@@ -121,7 +121,7 @@ var serverQuery = {
                         }
                     ]
                 },
-            },
+            }
         },
         "Pink Floyd": {
             "albums": {
@@ -194,7 +194,9 @@ var serverQuery = {
                             "duration": 749
                         }
                     ]
+                }
             }
         }
     }
 }
+
