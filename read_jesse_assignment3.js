@@ -3,19 +3,21 @@
     07/24/13
     Theme: A music-playing application for a mobile device. */
 
-for (var key in artistCollection.artists) {
-    var artist = {
-        "name": key,
-        "albums": new Object(),
+// Global State
+var remoteAvailable = false;
+var localJSONAvailable = true;
+
+// Conditional: is remote server available?
+if (!remoteAvailable) {
+    // False
+    console.log("Remote server unavailable, falling back to cached artist data.");
+    // Nested Conditional: is there cached JSON data?
+    if (!localJSONAvailable) {
+        // False
+        console.log("Local cache is empty. Sync failed.");
+        // Throw exception with description of issue. Forces failure status and ends execution.
+        throw Error('Sync engine failed to initiate. See log for more details.');
     }
-    for (var albumKey in artistCollection.artists[key].albums) {
-        console.log(albumKey);
-        console.log(Object.keys(artistCollection.artists[key].albums[albumKey].songs).length);
-        artist.albums[albumKey] = artistCollection.artists[key].albums[albumKey];
-        //artist.albums[albumKey] = {
-        //    "Test": "test",
-        //    "Boogers": "boog",
-        //}
-    }
-    console.log(artist);
 }
+
+var artistCollection = function parseArtists (serverQuery);
