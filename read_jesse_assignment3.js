@@ -26,7 +26,6 @@ if (!remoteAvailable) {
 
 var parseArtists = function (serverQuery) {
     var remainingArtists = Object.keys(serverQuery.artists).length;
-    console.log(remainingArtists);
     while (remainingArtists > 0) {
         var key = Object.keys(serverQuery.artists)[(remainingArtists - 1)];
         var songCount = 0;
@@ -51,7 +50,7 @@ var parseArtists = function (serverQuery) {
         for (var albumKey in serverQuery.artists[key].albums) {
             artist.albums[albumKey] = serverQuery.artists[key].albums[albumKey];
             artist.albums[albumKey].name = albumKey;
-            artist.albums[albumKey].trackList = function (albumKey) {
+            artist.albums[albumKey].trackList = function () {
                 this.songs.forEach(function (song, index) {
                     console.log("Track " + (index + 1) + ": " + song.title);
                 });
@@ -67,7 +66,12 @@ var parseArtists = function (serverQuery) {
         artist.songCount = songCount;
         artistCollection[key] = artist;
         remainingArtists--;
+        // Since the artist has been parsed, it can stream.
+        artist.setCanStream(true);
     }
+
+    // Local JSON has been parsed.
+    localJSONAvailable = false;
 }
 
 var playlistDuration = function (artist, albumKey, arrayOfSelectedSongs) {
@@ -76,6 +80,14 @@ var playlistDuration = function (artist, albumKey, arrayOfSelectedSongs) {
         runningDuration += artist.albums[albumKey].songs[index].duration
     }
     return runningDuration;
+}
+
+var createPlaylist = function (artist, albumKey, arrayOfSelectedSongs) {
+    var playlist = {}
+    for (var i = 0; i < arrayOfSelectedSongs.length; i++) {
+        playlist[(i+1)] = artist.albums[albumKey].songs[i];
+    }
+    return playlist;
 }
 
 var currentSelection = function (artist, albumKey, songIndex) {
@@ -91,8 +103,16 @@ var selectedAlbum = "Random Access Memories";
 var selectedAlbumSongs = [0, 2, 5, 3];
 
 console.log("Synced " + Object.keys(serverQuery.artists).length + " artists into local collection.");
+var artistDuration = artistCollection[selectedArtist].totalDuration();
+console.log("Your selected artist, " + selectedArtist + ", has a total song duration of " + ~~(artistDuration / 60) + " minutes and " + (artistDuration % 60) + " seconds.");
 var selection = currentSelection(artistCollection["Daft Punk"], "Random Access Memories", 2);
-console.log("You have chosen to play " + selection + ".");
-console.log("Compiling album playlist based off your selection.");
+console.log("You have chosen to play " + selection + ". Here is the track list:");
+artistCollection[selectedArtist].albums[selectedAlbum].trackList();
+console.log("Compiling album playlist based off your song selections.");
 var playlistLength = playlistDuration(artistCollection[selectedArtist], selectedAlbum, selectedAlbumSongs);
-console.log("The selected album has a duration of " + ~~(playlistLength / 60) + " minutes and " + (playlistLength % 60) + " seconds");
+console.log("Your selected songs have a total duration of " + ~~(playlistLength / 60) + " minutes and " + (playlistLength % 60) + " seconds.");
+var playlist = createPlaylist(artistCollection[selectedArtist], selectedAlbum, selectedAlbumSongs);
+console.log("Enjoy listening to your playlist!");
+console.log("// Debug Output:")
+console.log(Object.keys(serverQuery.artists).length + " artists synced.");
+console.log()
