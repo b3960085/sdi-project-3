@@ -70,8 +70,15 @@ var parseArtists = function (serverQuery) {
     }
 }
 
-var currentSelection = function (artistKey, albumKey, songIndex) {
-    var artist = artistCollection[artistKey];
+var playlistDuration = function (artist, albumKey, arrayOfSelectedSongs) {
+    var runningDuration = 0;
+    for (var index in arrayOfSelectedSongs) {
+        runningDuration += artist.albums[albumKey].songs[index].duration
+    }
+    return runningDuration;
+}
+
+var currentSelection = function (artist, albumKey, songIndex) {
     var album = artist.albums[albumKey];
     var song = album.songs[songIndex];
     return (song.title + " from the album " + album.name + " by " + artist.name);
@@ -84,7 +91,8 @@ var selectedAlbum = "Random Access Memories";
 var selectedAlbumSongs = [0, 2, 5, 3];
 
 console.log("Synced " + Object.keys(serverQuery.artists).length + " artists into local collection.");
-var selection = currentSelection("Daft Punk", "Random Access Memories", 2);
+var selection = currentSelection(artistCollection["Daft Punk"], "Random Access Memories", 2);
 console.log("You have chosen to play " + selection + ".");
-
-// var artistCount = countArtists();
+console.log("Compiling album playlist base off your selection.");
+var playlistLength = playlistDuration(artistCollection[selectedArtist], selectedAlbum, selectedAlbumSongs);
+console.log("The selected album has a duration of " + ~~(playlistLength / 60) + " minutes and " + (playlistLength % 60) + " seconds");
