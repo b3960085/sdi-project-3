@@ -96,6 +96,14 @@ var currentSelection = function (artist, albumKey, songIndex) {
     return (song.title + " from the album " + album.name + " by " + artist.name);
 }
 
+var willSync = function () {
+    if (remoteAvailable && localJSONAvailable) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 parseArtists(serverQuery);
 
 var selectedArtist = "Daft Punk";
@@ -114,5 +122,6 @@ console.log("Your selected songs have a total duration of " + ~~(playlistLength 
 var playlist = createPlaylist(artistCollection[selectedArtist], selectedAlbum, selectedAlbumSongs);
 console.log("Enjoy listening to your playlist!");
 console.log("// Debug Output:")
-console.log(Object.keys(serverQuery.artists).length + " artists synced.");
-console.log()
+console.log("// " + Object.keys(serverQuery.artists).length + " artists synced.");
+var willSyncNextLaunch = willSync();
+console.log("// Will app sync next launch? " + willSyncNextLaunch);
