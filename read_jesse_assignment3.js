@@ -93,6 +93,6 @@ var selectedAlbumSongs = [0, 2, 5, 3];
 console.log("Synced " + Object.keys(serverQuery.artists).length + " artists into local collection.");
 var selection = currentSelection(artistCollection["Daft Punk"], "Random Access Memories", 2);
 console.log("You have chosen to play " + selection + ".");
-console.log("Compiling album playlist base off your selection.");
+console.log("Compiling album playlist based off your selection.");
 var playlistLength = playlistDuration(artistCollection[selectedArtist], selectedAlbum, selectedAlbumSongs);
 console.log("The selected album has a duration of " + ~~(playlistLength / 60) + " minutes and " + (playlistLength % 60) + " seconds");
